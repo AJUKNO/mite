@@ -55,6 +55,6 @@ export interface IMite {
  * @property {WatchOptions} [options] - Watch options
  */
 export interface MiteConfig {
-  paths: string
+  paths: string | ReadonlyArray<string>
   options?: WatchOptions
 }
