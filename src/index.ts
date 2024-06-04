@@ -28,7 +28,7 @@ class Mite implements IMite {
 
   on(events: MiteEventName[], callback: MiteCallBack | MiteAllCallBack): void {
     if (!this.watcher) {
-      throw new Error('Watcher is not initialized')
+      throw Error('Watcher is not initialized')
     }
 
     events.forEach((event) => {
