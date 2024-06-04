@@ -32,14 +32,27 @@ export interface IMite {
 
   /**
    * Add event listener
+   * @param events
+   * @param callback
+   * @returns void
+   */
+  on(events: MiteEventName[], callback: MiteCallBack): void
+
+  /**
+   * Add event listener
+   * @param events
+   * @param callback
+   * @returns void
+   */
+  on(events: MiteEventName[], callback: MiteAllCallBack): void
+
+  /**
+   * Add event listener
    * @param callback
    * @param events
    * @returns void
    */
-  on(
-    events: MiteEventName[],
-    callback: (path: string) => Promise<void> | void
-  ): void
+  on(events: MiteEventName[], callback: MiteCallBack | MiteAllCallBack): void
 
   /**
    * Stop watching
@@ -58,3 +71,9 @@ export interface MiteConfig {
   paths: string | ReadonlyArray<string>
   options?: WatchOptions
 }
+
+export type MiteCallBack = (path: string) => Promise<void>
+export type MiteAllCallBack = (
+  event: MiteEventName,
+  path: string
+) => Promise<void>

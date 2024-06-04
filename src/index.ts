@@ -1,5 +1,5 @@
 import chokidar, { FSWatcher, WatchOptions } from 'chokidar'
-import { IMite, MiteConfig, MiteEventName } from '@/types'
+import { IMite, MiteAllCallBack, MiteCallBack, MiteConfig, MiteEventName } from '@/types'
 
 /**
  * Mite class
@@ -23,21 +23,32 @@ class Mite implements IMite {
     })
   }
 
-  on(
-    events: MiteEventName[],
-    callback: (path: string) => Promise<void> | void
-  ): void {
+  on(events: MiteEventName[], callback: MiteCallBack): void
+  on(events: MiteEventName[], callback: MiteAllCallBack): void
+
+  on(events: MiteEventName[], callback: MiteCallBack | MiteAllCallBack): void {
     if (!this.watcher) {
       throw new Error('Watcher is not initialized')
     }
 
     events.forEach((event) => {
-      this.watcher?.on(event, async (path) => await callback(path))
+      if (event === 'all') {
+        this.watcher?.on(
+          event,
+          async (eventName: MiteEventName, path: string) => {
+            await (callback as MiteAllCallBack)(eventName, path)
+          }
+        )
+      } else {
+        this.watcher?.on(event, async (path: string) => {
+          await (callback as MiteCallBack)(path)
+        })
+      }
     })
   }
 
   async stop(): Promise<void> {
-    this.watcher?.close()
+    await this.watcher?.close()
   }
 }
 
