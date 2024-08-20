@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import Mite from '@/index';
+import Mite from '../src/index';
 import { MiteOptions } from '@/types';
 
 describe('Mite', () => {
