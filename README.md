@@ -17,7 +17,7 @@
 First, import Mite into your project:
 
 ```javascript
-import mite from '@hanabi/mite';
+import { mite } from '@ajukno/mite';
 ```
 
 Then, initialize Mite with the paths you want to watch:
@@ -34,11 +34,17 @@ mite.on(['add'], (path) => {
 });
 ```
 
+To stop the watcher, use the `stop` method:
+
+```javascript
+await mite.stop();
+```
+
 ## API
 
-### `init(config: MiteConfig): void`
+### `init(options: MiteOptions): void`
 
-Initializes Mite with the given configuration. The `config` object should have the following properties:
+Initializes Mite with the given options. The `options` object should have the following properties:
 
 - `paths`: A string or an array of strings specifying the paths to watch
 - `options` (optional): An object specifying the watch options
@@ -54,7 +60,7 @@ Stops the file watcher.
 
 ## Tests
 
-Mite has a suite of tests that can be run using Jest. To run the tests, use the following command:
+Mite has a suite of tests that can be run using Vitest. To run the tests, use the following command:
 
 ```bash
 npm run test
@@ -62,4 +68,4 @@ npm run test
 
 ## License
 
-Mite is licensed under the ISC license.
+Mite is licensed under the MIT license.
