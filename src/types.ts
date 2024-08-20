@@ -56,14 +56,11 @@ export type MiteEventName =
  * Callback type for specific events (e.g., 'add', 'change', etc.)
  * @param path - The path of the file or directory that triggered the event
  */
-export type MiteCallBack = (path: string) => Promise<void> | void;
+export type MiteCallBack = (path: string) => void;
 
 /**
  * Callback type for the 'all' event, which includes the event name
  * @param eventName - The name of the event that was triggered
  * @param path - The path of the file or directory that triggered the event
  */
-export type MiteAllCallBack = (
-    eventName: MiteEventName,
-    path: string
-) => Promise<void> | void;
+export type MiteAllCallBack = (eventName: MiteEventName, path: string) => void;
