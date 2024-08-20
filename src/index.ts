@@ -1,10 +1,10 @@
-import * as chokidar from 'chokidar';
+import chokidar from 'chokidar';
 import {
     MiteAllCallBack,
     MiteCallBack,
     MiteEventName,
     MiteOptions,
-} from './types';
+} from '@/types';
 
 /**
  * Mite class provides a wrapper around the chokidar file system watcher.
@@ -36,12 +36,12 @@ class Mite {
 
         events.forEach((event) => {
             if (event === 'all') {
-                this.watcher.on(event, async (eventName, path) => {
-                    await (callback as MiteAllCallBack)(eventName, path);
+                this.watcher?.on(event, (eventName, path) => {
+                    (callback as MiteAllCallBack)(eventName, path);
                 });
             } else {
-                this.watcher.on(event, async (path) => {
-                    await (callback as MiteCallBack)(path);
+                this.watcher?.on(event, (path: string) => {
+                    (callback as MiteCallBack)(path);
                 });
             }
         });

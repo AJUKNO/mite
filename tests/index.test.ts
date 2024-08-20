@@ -1,9 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import Mite from '../src';
-import { MiteOptions } from '../src/types';
+import Mite from '@/index';
+import { MiteOptions } from '@/types';
 
 describe('Mite', () => {
-    let mite: Mite;
+    let mite: Mite | undefined;
 
     beforeEach(() => {
         mite = new Mite();
@@ -22,10 +22,10 @@ describe('Mite', () => {
                 paths: './test-path',
             };
 
-            mite.init(options);
+            mite?.init(options);
 
-            expect(mite.watcher).toBeDefined();
-            expect(mite.options).toEqual(options);
+            expect(mite?.watcher).toBeDefined();
+            expect(mite?.options).toEqual(options);
         });
     });
 
@@ -33,17 +33,19 @@ describe('Mite', () => {
         it('should throw error if watcher is not initialized', () => {
             const callback = vi.fn();
 
-            expect(() => mite.on(['add'], callback)).toThrow(
+            expect(() => mite?.on(['add'], callback)).toThrow(
                 'Watcher is not initialized. Please call init() before setting up event listeners.'
             );
         });
 
         it('should set up event listeners correctly', () => {
-            mite.init({ paths: './test-path' });
+            mite?.init({ paths: './test-path' });
             const callback = vi.fn();
-            const onSpy = vi.spyOn(mite.watcher, 'on');
 
-            mite.on(['add', 'change'], callback);
+            // @ts-expect-error: Ignore TS error for testing purposes
+            const onSpy = vi.spyOn(mite?.watcher, 'on');
+
+            mite?.on(['add', 'change'], callback);
 
             expect(onSpy).toHaveBeenCalledTimes(2);
             expect(onSpy).toHaveBeenCalledWith('add', expect.any(Function));
@@ -51,25 +53,25 @@ describe('Mite', () => {
         });
 
         it('should trigger callback when "add" event occurs', () => {
-            mite.init({ paths: './test-path' });
+            mite?.init({ paths: './test-path' });
             const callback = vi.fn();
 
-            mite.on(['add'], callback);
+            mite?.on(['add'], callback);
 
             // Simulate the "add" event
-            mite.watcher?.emit('add', 'test-file.txt');
+            mite?.watcher?.emit('add', 'test-file.txt');
 
             expect(callback).toHaveBeenCalledWith('test-file.txt');
         });
 
         it('should trigger callback when "all" event occurs', () => {
-            mite.init({ paths: './test-path' });
+            mite?.init({ paths: './test-path' });
             const callback = vi.fn();
 
-            mite.on(['all'], callback);
+            mite?.on(['all'], callback);
 
             // Simulate the "all" event
-            mite.watcher?.emit('all', 'add', 'test-file.txt');
+            mite?.watcher?.emit('all', 'add', 'test-file.txt');
 
             expect(callback).toHaveBeenCalledWith('add', 'test-file.txt');
         });
@@ -77,17 +79,19 @@ describe('Mite', () => {
 
     describe('stop', () => {
         it('should stop the watcher', async () => {
-            mite.init({ paths: './test-path' });
-            const closeSpy = vi.spyOn(mite.watcher, 'close');
+            mite?.init({ paths: './test-path' });
 
-            await mite.stop();
+            // @ts-expect-error: Ignore TS error for testing purposes
+            const closeSpy = vi.spyOn(mite?.watcher, 'close');
+
+            await mite?.stop();
 
             expect(closeSpy).toHaveBeenCalled();
-            expect(mite.watcher).toBeUndefined();
+            expect(mite?.watcher).toBeUndefined();
         });
 
         it('should throw error if stop is called without initialization', async () => {
-            await expect(mite.stop()).rejects.toThrow(
+            await expect(mite?.stop()).rejects.toThrow(
                 'Watcher is not initialized or already stopped.'
             );
         });
