@@ -1,60 +1,69 @@
-import { FSWatcher, WatchOptions } from 'chokidar'
+import * as chokidar from 'chokidar';
 
 /**
- * Mite event names
- */
-export type MiteEventName =
-  | 'add'
-  | 'addDir'
-  | 'change'
-  | 'unlink'
-  | 'unlinkDir'
-  | 'all'
-
-/**
- * Mite interface
- * @interface
- * @property {string | readonly string[] | undefined} paths - Paths to watch
- * @property {WatchOptions | undefined} options - Watch options
- * @property {FSWatcher | undefined} watcher - Chokidar watcher instance
+ * Interface representing the Mite class functionality.
+ * Provides methods to initialize a file watcher, set up event listeners, and stop the watcher.
  */
 export interface IMite {
-  paths: string | readonly string[] | undefined
-  options: WatchOptions | undefined
-  watcher: FSWatcher | undefined
+    options?: MiteOptions;
+    watcher?: chokidar.FSWatcher;
 
-  /**
-   * Initialize Mite
-   * @param config
-   * @returns void
-   */
-  init(config: MiteConfig): void
+    /**
+     * Initializes the Mite watcher with the provided options.
+     *
+     * @param {MiteOptions} options - Configuration options for the file watcher, including paths to watch and additional options.
+     * @throws {Error} Will throw an error if the watcher initialization fails.
+     */
+    init(options: MiteOptions): void;
 
-  /**
-   * Add event listener
-   * @param callback
-   * @param events
-   * @returns void
-   */
-  on(
-    events: MiteEventName[],
-    callback: (path: string) => Promise<void> | void
-  ): void
+    /**
+     * Sets up event listeners on the watcher.
+     *
+     * @param {MiteEventName[]} events - Array of event names to listen to (e.g., 'add', 'change', 'unlink', etc.).
+     * @param {MiteCallBack | MiteAllCallBack} callback - Callback function to execute when the specified events are triggered.
+     * @throws {Error} Will throw an error if the watcher is not initialized.
+     */
+    on(events: MiteEventName[], callback: MiteCallBack | MiteAllCallBack): void;
 
-  /**
-   * Stop watching
-   * @returns void
-   */
-  stop(): Promise<void>
+    /**
+     * Stops the watcher and releases resources.
+     *
+     * @returns {Promise<void>} A promise that resolves when the watcher has successfully stopped.
+     * @throws {Error} Will throw an error if the watcher is not initialized or is already stopped.
+     */
+    stop(): Promise<void>;
 }
 
 /**
- * Mite configuration
- * @interface
- * @property {string | readonly string[]} paths - Paths to watch
- * @property {WatchOptions} [options] - Watch options
+ * Configuration options for the Mite watcher.
  */
-export interface MiteConfig {
-  paths: string
-  options?: WatchOptions
+export interface MiteOptions extends chokidar.WatchOptions {
+    paths: string | ReadonlyArray<string>;
 }
+
+/**
+ * Supported event names for the Mite watcher
+ */
+export type MiteEventName =
+    | 'add'
+    | 'addDir'
+    | 'change'
+    | 'unlink'
+    | 'unlinkDir'
+    | 'all';
+
+/**
+ * Callback type for specific events (e.g., 'add', 'change', etc.)
+ * @param path - The path of the file or directory that triggered the event
+ */
+export type MiteCallBack = (path: string) => Promise<void> | void;
+
+/**
+ * Callback type for the 'all' event, which includes the event name
+ * @param eventName - The name of the event that was triggered
+ * @param path - The path of the file or directory that triggered the event
+ */
+export type MiteAllCallBack = (
+    eventName: MiteEventName,
+    path: string
+) => Promise<void> | void;

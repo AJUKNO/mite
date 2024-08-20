@@ -1,9 +1,13 @@
 <p align="center">
-  <img src="./.github/assets/mite-banner.png" alt="Mite banner">
+  <img src="https://raw.githubusercontent.com/AJUKNO/mite/main/.github/assets/mite-banner.png" alt="Mite banner">
 </p>
 
 <p align="center">
   Mite is a simple tool to watch file changes. It is built with TypeScript and uses the Chokidar library for file watching.
+</p>
+
+<p align="center">
+<a href="https://www.npmjs.com/package/@ajukno/mite"><img src="https://img.shields.io/npm/v/%40ajukno%2Fmite?labelColor=%23C75B7A&color=3D3B40" alt="NPM Version"></a>
 </p>
 
 ## Features
@@ -17,7 +21,7 @@
 First, import Mite into your project:
 
 ```javascript
-import mite from '@hanabi/mite';
+import { mite } from '@ajukno/mite';
 ```
 
 Then, initialize Mite with the paths you want to watch:
@@ -34,11 +38,17 @@ mite.on(['add'], (path) => {
 });
 ```
 
+To stop the watcher, use the `stop` method:
+
+```javascript
+await mite.stop();
+```
+
 ## API
 
-### `init(config: MiteConfig): void`
+### `init(options: MiteOptions): void`
 
-Initializes Mite with the given configuration. The `config` object should have the following properties:
+Initializes Mite with the given options. The `options` object should have the following properties:
 
 - `paths`: A string or an array of strings specifying the paths to watch
 - `options` (optional): An object specifying the watch options
@@ -54,7 +64,7 @@ Stops the file watcher.
 
 ## Tests
 
-Mite has a suite of tests that can be run using Jest. To run the tests, use the following command:
+Mite has a suite of tests that can be run using Vitest. To run the tests, use the following command:
 
 ```bash
 npm run test
@@ -62,4 +72,4 @@ npm run test
 
 ## License
 
-Mite is licensed under the ISC license.
+Mite is licensed under the MIT license.

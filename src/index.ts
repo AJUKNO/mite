@@ -1,46 +1,62 @@
-import chokidar, { FSWatcher, WatchOptions } from 'chokidar'
-import { IMite, MiteConfig, MiteEventName } from '@/types'
+import * as chokidar from 'chokidar';
+import {
+    MiteAllCallBack,
+    MiteCallBack,
+    MiteEventName,
+    MiteOptions,
+} from './types';
 
 /**
- * Mite class
- * @class
- * @implements {IMite}
+ * Mite class provides a wrapper around the chokidar file system watcher.
+ * It allows for easy initialization, event handling, and graceful shutdown of the watcher.
  */
-class Mite implements IMite {
-  paths: string | readonly string[] | undefined
-  options: WatchOptions | undefined
-  watcher: FSWatcher | undefined
+class Mite {
+    watcher?: chokidar.FSWatcher;
+    options?: MiteOptions;
 
-  init(config: MiteConfig) {
-    this.paths = config.paths
-    this.options = config.options || {}
-
-    this.watcher = chokidar.watch(this.paths, {
-      ignoreInitial: true,
-      ignored: /(\.|\/)\../,
-      persistent: true,
-      ...this.options,
-    })
-  }
-
-  on(
-    events: MiteEventName[],
-    callback: (path: string) => Promise<void> | void
-  ): void {
-    if (!this.watcher) {
-      throw new Error('Watcher is not initialized')
+    init(options: MiteOptions) {
+        this.options = options;
+        this.watcher = chokidar.watch(options.paths, {
+            ignoreInitial: true,
+            ignored: /([./])\../,
+            persistent: true,
+            ...options,
+        });
     }
 
-    events.forEach((event) => {
-      this.watcher?.on(event, async (path) => await callback(path))
-    })
-  }
+    on(
+        events: MiteEventName[],
+        callback: MiteCallBack | MiteAllCallBack
+    ): void {
+        if (!this.watcher) {
+            throw new Error(
+                'Watcher is not initialized. Please call init() before setting up event listeners.'
+            );
+        }
 
-  async stop(): Promise<void> {
-    this.watcher?.close()
-  }
+        events.forEach((event) => {
+            if (event === 'all') {
+                this.watcher.on(event, async (eventName, path) => {
+                    await (callback as MiteAllCallBack)(eventName, path);
+                });
+            } else {
+                this.watcher.on(event, async (path) => {
+                    await (callback as MiteCallBack)(path);
+                });
+            }
+        });
+    }
+
+    async stop(): Promise<void> {
+        if (!this.watcher) {
+            throw new Error('Watcher is not initialized or already stopped.');
+        }
+
+        await this.watcher.close();
+        this.watcher = undefined; // Clean up watcher reference
+    }
 }
 
-const mite = new Mite()
+export const mite = new Mite();
 
-export default mite
+export default Mite;
